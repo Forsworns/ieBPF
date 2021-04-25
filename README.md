@@ -1,10 +1,8 @@
 # ieBPF
 
-![Rust](https://img.shields.io/badge/language-C-orange.svg)
-
-![Rust](https://img.shields.io/badge/IoT-eBPF-blue.svg)
-
-![Rust](https://img.shields.io/badge/board-STM32MP157A-yellow.svg)
+![C](https://img.shields.io/badge/language-C-orange.svg)
+![eBPF](https://img.shields.io/badge/IoT-eBPF-blue.svg)
+![STM32MP157A](https://img.shields.io/badge/board-STM32MP157A-yellow.svg)
 
 **have not verified ... Only pass the building**
 
