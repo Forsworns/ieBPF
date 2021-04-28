@@ -20,15 +20,13 @@ The testing environments are
 # Load the compiled `elf` file to the Cortex-M4 through 
 # STM32CubeIDE on host machine or 
 # STM32CubeIDE generated scripts on the ubuntu
-# Then run the `test.sh` under `/Cortex-A7` on ubuntu 
-chmod 777 ./test.sh
-./test.sh
+# Then run the testcases in `/Cortex-A7` 
 ```
 
 ## Todo
 - [x] Migrate Tencent-OS tiny to board 
 - [x] Migrate the uBPF  
-- [ ] Test uBPF on both ascii and elf files (have placed in the `/Cortex-M7`)
+- [ ] Test M4 on both assembler and elf files (have placed in the `/Cortex-M7`)
 - [ ] Find suitable application scenes and conduct related experiments
 - [ ] Try to provide  JIT on ARMv7-M for Cortex-M4 (refer to the JIT implementation of uBPF)
 - [ ] Performance evaluation 

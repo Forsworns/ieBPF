@@ -70,13 +70,13 @@ void task_amp_func()
 		if (channel0_rx_flag)
 		{
 			channel0_rx_flag = RESET;
-			if (strcmp((char *)channel0_rx, CFG_JIT) == 0)
+			if (strncmp((char *)channel0_rx, CFG_JIT, strlen(CFG_JIT)) == 0)
 			{
 				jit = true;
 				// simply send the message back
 				VIRT_UART_Transmit(&huart0, channel0_rx, channel0_rx_len);
 			}
-			else if (strcmp((char *)channel0_rx, CFG_INTERPRET) == 0)
+			else if (strncmp((char *)channel0_rx, CFG_INTERPRET, strlen(CFG_INTERPRET)) == 0)
 			{
 				jit = false;
 				VIRT_UART_Transmit(&huart0, channel0_rx, channel0_rx_len);
@@ -89,8 +89,8 @@ void task_amp_func()
 				memcpy(bpf_code, channel0_rx, channel0_rx_len);
 				bpf_code_len = channel0_rx_len;
 				uint64_t result = bpf_vm();
-				sprintf((char *)channel0_rx, "Result is %lld", result);
-				VIRT_UART_Transmit(&huart0, channel0_rx, channel0_rx_len);
+				sprintf((char *)channel0_rx, "Result is %llu\n", result);
+				VIRT_UART_Transmit(&huart0, channel0_rx, strlen(channel0_rx));
 			}
 		}
 		// currently, ttyRPMSG0 and ttyRPMSG1 send the same data,
@@ -113,8 +113,8 @@ void task_amp_func()
 				memcpy(bpf_code, channel1_rx, channel1_rx_len);
 				bpf_code_len = channel1_rx_len;
 				uint64_t result = bpf_vm();
-				sprintf((char *)channel1_rx, "Result is %lld", result);
-				VIRT_UART_Transmit(&huart1, channel1_rx, channel1_rx_len);
+				sprintf((char *)channel1_rx, "Result is %llu\n", result);
+				VIRT_UART_Transmit(&huart1, channel1_rx, strlen(channel1_rx));
 			}
 		}
 	}

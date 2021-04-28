@@ -6,14 +6,14 @@
 
 [STM32MP157A和IPCC](https://forsworns.github.io/zh/blogs/20210223/)
 
-## 测试样例 alu_arith
+## 测试样例 
 
-该目录下有三个文件
+该目录下文件放置于 A7 上的 linux 目录下
 
-- `alu_arith.bpf` 是一个 `elf`文件，理论上是由 clang 由 C 代码生成的，但是这里是用 uBPF 里提供的汇编器程序，把下面那个汇编转到 BPF 的指令集上的机器码
-- `alu_arith.bpfasm` 是 BPF 指令集上的汇编代码
-- `alu_arith.data` 是说明那个汇编，带了些注释
+- `alu_arith.bpf` 是用 uBPF 里提供的汇编器程序，把汇编转到 BPF 的指令集上的机器码
+- `add.o` 是一个真实的由 clang 编译出的 elf 文件
 
-现在我们应该是要向 `/dev/RPMsg0` 或者 `/dev/RPMsg1` 发送这两个文件中的内容，让 Cortex-M4 去执行？我在本地测试这两个样例，在 uBPF 上是都可以用的。
+前者使用 `test_code_interpret.sh` 进行测试，后者使用 `test_elf_interpret.sh` 进行测试。前者可以通过测试，返回一个计算值 `42`；后者有536字节，大于 buffer 大小，被拆开成了两个（496字节+40字节），所以暂时没法通过测试，需要修改 M4 上的代码。
 
-如果测试成功，结果应该是 `0x2a`
+都需要使用 `amp_init.sh` 初始化
+
