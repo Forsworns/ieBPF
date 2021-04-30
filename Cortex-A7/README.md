@@ -15,5 +15,9 @@
 
 前者使用 `test_code_interpret.sh` 进行测试，后者使用 `test_elf_interpret.sh` 进行测试。前者可以通过测试，返回一个计算值 `42`；后者有536字节，大于 buffer 大小，被拆开成了两个（496字节+40字节），所以暂时没法通过测试，需要修改 M4 上的代码。
 
-都需要使用 `amp_init.sh` 初始化
+都需要提前将`./BPF_CM4/lib/firmware/BPF_CM4.elf` 中的 elf 映像用`./BPF_CM4/fw_cortex_m4.sh start`写入到 Cortex-M4 上，并使用 `amp_init.sh` 初始化
+
+运行后效果如下图
+
+![](./example1.png)
 

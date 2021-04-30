@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <inttypes.h>
 #include "elf_loader.h" // included in the OpenAMP
 
 void task_led_func()
@@ -89,7 +90,7 @@ void task_amp_func()
 				memcpy(bpf_code, channel0_rx, channel0_rx_len);
 				bpf_code_len = channel0_rx_len;
 				uint64_t result = bpf_vm();
-				sprintf((char *)channel0_rx, "Result is %llu\n", result);
+				sprintf((char *)channel0_rx, "Result is %lu\n", result); // seems not support %llu
 				VIRT_UART_Transmit(&huart0, channel0_rx, strlen(channel0_rx));
 			}
 		}
@@ -113,7 +114,7 @@ void task_amp_func()
 				memcpy(bpf_code, channel1_rx, channel1_rx_len);
 				bpf_code_len = channel1_rx_len;
 				uint64_t result = bpf_vm();
-				sprintf((char *)channel1_rx, "Result is %llu\n", result);
+				sprintf((char *)channel1_rx, "Result is %lu\n", result);
 				VIRT_UART_Transmit(&huart1, channel1_rx, strlen(channel1_rx));
 			}
 		}
