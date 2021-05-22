@@ -4,8 +4,6 @@
 ![eBPF](https://img.shields.io/badge/IoT-eBPF-blue.svg)
 ![STM32MP157A](https://img.shields.io/badge/board-STM32MP157A-yellow.svg)
 
-**have not verified ... Only pass the building**
-
 ## Environment
 
 The testing environments are
