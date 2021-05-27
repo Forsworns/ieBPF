@@ -16,8 +16,10 @@ void board_init(void)
 	__HAL_RCC_HSEM_CLK_ENABLE();
 	/* IPCC initialisation */
 	MX_IPCC_Init();
+	#ifndef BPF_TEST
 	/* OpenAmp initialisation ---------------------------------*/
 	MX_OPENAMP_Init(RPMSG_REMOTE, NULL);
+	#endif
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 }
