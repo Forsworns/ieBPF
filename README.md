@@ -4,14 +4,12 @@
 ![eBPF](https://img.shields.io/badge/IoT-eBPF-blue.svg)
 ![STM32MP157A](https://img.shields.io/badge/board-STM32MP157A-yellow.svg)
 
-**have not verified ... Only pass the building**
-
 ## Environment
 
 The testing environments are
 
 - Ubuntu 18.04 on Cortex-A7, the related codes and scripts are under `{$this_repo}/Cortex-A7`.  In fact, the weston-openstlinux is enough, but considering the extensibility in the following experiments, it is still recommended to install Ubuntu on Cortex-A7.
-- TencentOS-tiny on Cortex-M4, the related STM32CubeIDE project is under `{$this_repo}/Cortex-A7`. I haven't found the suitable application cases, so the feature of the OS is nearly not utilized. 
+- TencentOS-tiny on Cortex-M4, the related STM32CubeIDE project is under `{$this_repo}/Cortex-M4`. I haven't found the suitable application cases, so the feature of the OS is nearly not utilized. 
 
 ## Testing
 
@@ -26,7 +24,7 @@ The testing environments are
 ## Todo
 - [x] Migrate Tencent-OS tiny to board 
 - [x] Migrate the uBPF  
-- [ ] Test M4 on both assembler and elf files (have placed in the `/Cortex-M7`)
+- [x] Test M4 on both assembler and elf files (have placed in the `/Cortex-M7`)
 - [ ] Find suitable application scenes and conduct related experiments
 - [ ] Try to provide  JIT on ARMv7-M for Cortex-M4 (refer to the JIT implementation of uBPF)
 - [ ] Performance evaluation 
