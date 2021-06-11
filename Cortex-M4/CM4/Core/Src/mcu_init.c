@@ -1,5 +1,6 @@
 #include "main.h"
 
+
 void board_init(void)
 {
 	/* MCU Configuration--------------------------------------------------------*/
@@ -20,6 +21,7 @@ void board_init(void)
 	MX_OPENAMP_Init(RPMSG_REMOTE, NULL);
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	MX_UART4_Init();
 }
 
 /**

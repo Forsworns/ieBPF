@@ -84,7 +84,7 @@ void task_amp_func()
 			}
 			else
 			{
-				// by default, it should be BPF codes now, either binary elf or ascii asm
+				// by default, it should be BPF codes now, either binary elf or binary byte code from ubpf python scripts
 				// now it only supports program length up to MAX_BUFFER_SIZE
 				// consider relax this constraint, or seperately send different segments?
 				memcpy(bpf_code, channel0_rx, channel0_rx_len);
@@ -96,7 +96,7 @@ void task_amp_func()
 		}
 		// currently, ttyRPMSG0 and ttyRPMSG1 send the same data,
 		// maybe used for control and data seperately like what `FTP` does
-		if (channel1_rx_flag)
+		else if (channel1_rx_flag)
 		{
 			channel1_rx_flag = RESET;
 			if (strcmp((char *)channel1_rx, CFG_JIT) == 0)
@@ -117,6 +117,8 @@ void task_amp_func()
 				sprintf((char *)channel1_rx, "Result is %lu\n", result);
 				VIRT_UART_Transmit(&huart1, channel1_rx, strlen(channel1_rx));
 			}
+		}else{
+			// tos_task_delay(100); // only for validation of multi-task RTOS. without delay, LED task above will not be carried
 		}
 	}
 }

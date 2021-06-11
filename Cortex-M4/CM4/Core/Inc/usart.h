@@ -1,9 +1,8 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
+  * @file    usart.h
+  * @brief   This file contains all the function prototypes for
+  *          the usart.c file
   ******************************************************************************
   * @attention
   *
@@ -17,51 +16,37 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __USART_H__
+#define __USART_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-/* board */
-#include "stm32mp1xx_hal.h"
-#include "gpio.h"
-#include "usart.h"
-#include "ipcc.h"
-/* openamp */
-#include "openamp.h"
-#include "virt_uart.h"
-/* os */
-// #include "cmsis_os.h" // use cmsis api
-#include "tos_k.h" // use t_os api
-#include "tos_hal.h"
-/* 
-#include "ff.h"
-#include "tos_vfs.h"
-#include "tos_fatfs_drv.h"
-#include "tos_fatfs_vfs.h"
-#include "tos_elfloader.h"
-*/
-/* bpf */
-#include "ebpf.h"
-#include "ubpf.h"
-#include "ubpf_int.h"
-#include "tasks.h"
-#include <stdio.h>
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
 
-  void Error_Handler(void);
-  void SystemClock_Config(void);
+/* USER CODE BEGIN Includes */
 
-  void board_init(void);
+/* USER CODE END Includes */
+
+extern UART_HandleTypeDef huart4;
+
+/* USER CODE BEGIN Private defines */
+
+/* USER CODE END Private defines */
+
+void MX_UART4_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+/* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MAIN_H */
+#endif /* __USART_H__ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
