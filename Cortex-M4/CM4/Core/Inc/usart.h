@@ -30,7 +30,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
-
+#ifdef HAL_UART_MODULE_ENABLED
 extern UART_HandleTypeDef huart4;
 
 /* USER CODE BEGIN Private defines */
@@ -42,6 +42,8 @@ void MX_UART4_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 /* USER CODE END Prototypes */
+
+#endif
 
 #ifdef __cplusplus
 }

@@ -13,7 +13,7 @@
 - `alu_arith.bpf` 是用 uBPF 里提供的汇编器程序，把汇编转到 BPF 的指令集上的机器码
 - `add.o` 是一个真实的由 clang 编译出的 elf 文件
 
-前者使用 `test_code_interpret.sh` 进行测试，后者使用 `test_elf_interpret.sh` 进行测试。前者可以通过测试，返回一个计算值 `42`；后者有536字节，大于 buffer 大小，被拆开成了两个（496字节+40字节），所以暂时没法通过测试，需要修改 M4 上的代码。
+前者使用 `test_code_interpret.sh` 进行测试，后者使用 `test_elf_interpret.sh` 进行测试。前者可以通过测试，返回一个计算值 `42`；后者有536字节，大于 buffer 大小，被拆开成了两个（496字节+40字节），返回计算值 689。
 
 都需要提前将`./BPF_CM4/lib/firmware/BPF_CM4.elf` 中的 elf 映像用`./BPF_CM4/fw_cortex_m4.sh start`写入到 Cortex-M4 上，并使用 `amp_init.sh` 初始化
 
@@ -21,3 +21,4 @@
 
 ![](./example1.png)
 
+左侧是使用 ssh 远程连接到 A7 端的 Linux 下进行操作的演示，右侧是串口通信的调试输出。

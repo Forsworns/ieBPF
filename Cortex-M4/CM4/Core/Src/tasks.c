@@ -43,20 +43,15 @@ void task_led_func()
 
 IPCC_HandleTypeDef hipcc;
 
-VIRT_UART_HandleTypeDef huart0;
-VIRT_UART_HandleTypeDef huart1;
-
 __IO FlagStatus channel0_rx_flag = RESET;
-uint8_t channel0_rx[MAX_BUFFER_SIZE];
+VIRT_UART_HandleTypeDef huart0;
+uint8_t channel0_tx[MAX_BUFFER_SIZE] = {0}; // MAX_BUFFER_SIZE 512
 uint16_t channel0_rx_len = 0;
-
-__IO FlagStatus channel1_rx_flag = RESET;
-uint8_t channel1_rx[MAX_BUFFER_SIZE];
-uint16_t channel1_rx_len = 0;
 
 char CFG_JIT[] = "JIT";
 char CFG_INTERPRET[] = "INTERPRET";
-uint8_t bpf_code[MAX_BUFFER_SIZE] = {0};
+char CFG_EOF[] = "EOF";
+uint8_t bpf_code[MAX_BUFFER_SIZE*4] = {0};
 uint16_t bpf_code_len = 0;
 bool jit = false;
 
@@ -71,76 +66,40 @@ void task_amp_func()
 	amp_init();
 	while (1)
 	{
-		// maybe put these codes in the callbacks above?
 		OPENAMP_check_for_message();
-		if (channel0_rx_flag)
-		{
+		if(channel0_rx_flag){ // have received complete code file
+			uint64_t result = bpf_vm();
+			sprintf((char *)channel0_tx, "Result is %lu\n", result); // seems not support %llu
+			VIRT_UART_Transmit(&huart0, channel0_tx, strlen((char*) channel0_tx));
 			channel0_rx_flag = RESET;
-			if (strncmp((char *)channel0_rx, CFG_JIT, strlen(CFG_JIT)) == 0)
-			{
-				jit = true;
-				// simply send the message back
-				VIRT_UART_Transmit(&huart0, channel0_rx, channel0_rx_len);
-			}
-			else if (strncmp((char *)channel0_rx, CFG_INTERPRET, strlen(CFG_INTERPRET)) == 0)
-			{
-				jit = false;
-				VIRT_UART_Transmit(&huart0, channel0_rx, channel0_rx_len);
-			}
-			else
-			{
-				// by default, it should be BPF codes now, either binary elf or binary byte code from ubpf python scripts
-				// now it only supports program length up to MAX_BUFFER_SIZE
-				// consider relax this constraint, or seperately send different segments?
-				memcpy(bpf_code, channel0_rx, channel0_rx_len);
-				bpf_code_len = channel0_rx_len;
-				uint64_t result = bpf_vm();
-				sprintf((char *)channel0_rx, "Result is %lu\n", result); // seems not support %llu
-				VIRT_UART_Transmit(&huart0, channel0_rx, strlen(channel0_rx));
-			}
+			bpf_code_len = 0;
 		}
-		// currently, ttyRPMSG0 and ttyRPMSG1 send the same data,
-		// maybe used for control and data seperately like what `FTP` does
-		else if (channel1_rx_flag)
-		{
-			channel1_rx_flag = RESET;
-			if (strcmp((char *)channel1_rx, CFG_JIT) == 0)
-			{
-				jit = true;
-				VIRT_UART_Transmit(&huart1, channel1_rx, channel1_rx_len);
-			}
-			else if (strcmp((char *)channel1_rx, CFG_INTERPRET) == 0)
-			{
-				jit = false;
-				VIRT_UART_Transmit(&huart1, channel1_rx, channel1_rx_len);
-			}
-			else
-			{
-				memcpy(bpf_code, channel1_rx, channel1_rx_len);
-				bpf_code_len = channel1_rx_len;
-				uint64_t result = bpf_vm();
-				sprintf((char *)channel1_rx, "Result is %lu\n", result);
-				VIRT_UART_Transmit(&huart1, channel1_rx, strlen(channel1_rx));
-			}
-		}else{
-			// tos_task_delay(100); // only for validation of multi-task RTOS. without delay, LED task above will not be carried
-		}
+		tos_task_delay(100);
 	}
 }
 
 void uart0_rx_callback(VIRT_UART_HandleTypeDef *huart)
 {
 	channel0_rx_len = huart->RxXferSize < MAX_BUFFER_SIZE ? huart->RxXferSize : MAX_BUFFER_SIZE - 1;
-	memcpy(channel0_rx, huart->pRxBuffPtr, channel0_rx_len);
-	channel0_rx_flag = SET;
-}
-
-void uart1_rx_callback(VIRT_UART_HandleTypeDef *huart)
-{
-
-	channel1_rx_len = huart->RxXferSize < MAX_BUFFER_SIZE ? huart->RxXferSize : MAX_BUFFER_SIZE - 1;
-	memcpy(channel1_rx, huart->pRxBuffPtr, channel1_rx_len);
-	channel1_rx_flag = SET;
+	if (strncmp((char *)huart->pRxBuffPtr, CFG_JIT, strlen(CFG_JIT)) == 0)
+	{
+		jit = true;
+		// simply send the received message back to notify remote system
+		VIRT_UART_Transmit(&huart0, huart->pRxBuffPtr, channel0_rx_len);
+	}
+	else if (strncmp((char *)huart->pRxBuffPtr, CFG_INTERPRET, strlen(CFG_INTERPRET)) == 0)
+	{
+		jit = false;
+		VIRT_UART_Transmit(&huart0, huart->pRxBuffPtr, channel0_rx_len);
+	}
+	else if (strncmp((char *)huart->pRxBuffPtr, CFG_EOF, strlen(CFG_EOF)) == 0)
+	{
+		// put BPF execution in callback would emit Hard fault interrupt
+		channel0_rx_flag = SET;
+	}else{
+		memcpy(bpf_code+bpf_code_len, huart->pRxBuffPtr, channel0_rx_len);
+		bpf_code_len += channel0_rx_len;
+	}
 }
 
 void amp_init()
@@ -150,19 +109,11 @@ void amp_init()
 		Error_Handler();
 	}
 
-	if (VIRT_UART_Init(&huart1) != VIRT_UART_OK)
-	{
-		Error_Handler();
-	}
-
 	if (VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, uart0_rx_callback) != VIRT_UART_OK)
 	{
 		Error_Handler();
 	}
-	if (VIRT_UART_RegisterCallback(&huart1, VIRT_UART_RXCPLT_CB_ID, uart1_rx_callback) != VIRT_UART_OK)
-	{
-		Error_Handler();
-	}
+	OPENAMP_Wait_EndPointready(&huart0.ept);
 }
 
 uint64_t bpf_vm()
@@ -170,16 +121,10 @@ uint64_t bpf_vm()
 	uint64_t result = 0;
 	size_t mem_len = 0; // currently don't consider the mem part
 	void *mem = NULL;
-	/* 	
-	tos supports elf, but it seems only support loading from file system,
-	have included the related elf and fs components,
-	OpenAMP also includes `elf_loader.h`, so the original codes may work
-	but currently, we only focus on the ascii ones
-	*/
 	struct ubpf_vm *vm = ubpf_create();
 	if (!vm)
 	{
-		fprintf(stderr, "Failed to create VM\n");
+		fprintf(stderr, "Failed to create VM\r\n");
 		return 1;
 	}
 
@@ -204,7 +149,7 @@ uint64_t bpf_vm()
 
 	if (rv < 0)
 	{
-		printf("Failed to load code: %s\n", errmsg);
+		printf("Failed to load code: %s\r\n", errmsg);
 		ubpf_destroy(vm);
 		return 0;
 	}
@@ -214,15 +159,15 @@ uint64_t bpf_vm()
 		ubpf_jit_fn fn = ubpf_compile(vm, &errmsg);
 		if (fn == NULL)
 		{
-			printf("Failed to compile: %s\n", errmsg);
+			printf("Failed to compile: %s\r\n", errmsg);
 			return 0;
 		}
-		printf("Run the JIT compiled code...\n");
+		printf("Run the JIT compiled code...\r\n");
 		result = fn(mem, mem_len);
 	}
 	else
 	{
-		printf("Interpret the code...\n");
+		printf("Interpret the code...\r\n");
 		result = ubpf_exec(vm, mem, mem_len);
 	}
 

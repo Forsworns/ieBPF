@@ -16,9 +16,9 @@
   *
   ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
+#ifdef HAL_UART_MODULE_ENABLED
 
 /* USER CODE BEGIN 0 */
 
@@ -159,3 +159,4 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif

@@ -23,7 +23,10 @@ void board_init(void)
 	#endif
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+
+	#ifdef HAL_UART_MODULE_ENABLED
 	MX_UART4_Init();
+	#endif
 }
 
 /**

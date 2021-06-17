@@ -167,7 +167,7 @@ int ubpf_load(struct ubpf_vm *vm, const void *code, uint32_t code_len, char **er
 
     memcpy(vm->insts, code, code_len);
     vm->num_insts = code_len / sizeof(vm->insts[0]);
-    printf("The number of the instructions in the VM is: %hu\n", vm->num_insts);
+    printf("The number of the instructions in the VM is: %hu\r\n", vm->num_insts);
     for (int i = 0; i < vm->num_insts; ++i)
     {
         char inst_fmt[100];
@@ -866,8 +866,8 @@ bounds_check(const struct ubpf_vm *vm, void *addr, int size, const char *type, u
     }
     else
     {
-        fprintf(stderr, "uBPF error: out of bounds memory %s at PC %u, addr %p, size %d\n", type, cur_pc, addr, size);
-        fprintf(stderr, "mem %p/%zd stack %p/%d\n", mem, mem_len, stack, STACK_SIZE);
+        fprintf(stderr, "uBPF error: out of bounds memory %s at PC %u, addr %p, size %d\r\n", type, cur_pc, addr, size);
+        fprintf(stderr, "mem %p/%zd stack %p/%d\r\n", mem, mem_len, stack, STACK_SIZE);
         return false;
     }
 }
@@ -888,6 +888,6 @@ ubpf_error(const char *fmt, ...)
 
 int ebpf_inst_fmt(char *output, struct ebpf_inst *inst)
 {
-    int length = sprintf(output, "opcode: %hhX, dst: %hhX, src: %hhX, offset: %hd, imm: %d", inst->opcode, inst->dst, inst->src, inst->offset, inst->imm);
+    int length = sprintf(output, "opcode: %hhX, dst: %hhX, src: %hhX, offset: %hd, imm: %d\r\n", inst->opcode, inst->dst, inst->src, inst->offset, inst->imm);
     return length;
 }
