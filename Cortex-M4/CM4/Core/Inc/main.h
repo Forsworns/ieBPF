@@ -47,8 +47,6 @@ extern "C"
 #include "tos_elfloader.h"
 */
 /* bpf */
-//#define BPF_TEST  //enable BPF Test program
-
 #include "ebpf.h"
 #include "ubpf.h"
 #include "ubpf_int.h"
