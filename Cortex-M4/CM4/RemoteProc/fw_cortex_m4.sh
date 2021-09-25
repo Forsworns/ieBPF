@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 rproc_class_dir="/sys/class/remoteproc/remoteproc0"
 fmw_dir="/lib/firmware"
